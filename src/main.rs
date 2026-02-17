@@ -80,7 +80,6 @@ async fn proxy(
 
 
 
-
 #[tokio::main]
 async fn main() {
     tracing_subscriber::fmt()
@@ -115,4 +114,36 @@ async fn main() {
 
 async fn root() -> &'static str {
     "API Gateway"
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use axum::body::Body;
+    use axum::http::{Method, Request};
+    use std::collections::HashMap;
+
+    #[tokio::test]
+    async fn test_proxy() {
+        let client = Client::new();
+        let services = HashMap::from([("users", "http://localhost:3001")]);
+        let state = AppState {
+            client,
+            services: Arc::new(services),
+        };
+
+        // Create a dummy request to proxy
+        let req = Request::builder()
+            .method(Method::GET)
+            .uri("/users/profile")
+            .body(Body::empty())
+            .unwrap();
+
+        // Call the proxy function directly
+        let response = proxy(State(state), Path(("users".to_string(), "profile".to_string())), req).await;
+
+        // Assert the response is successful (or handle as needed)
+        assert!(response.is_ok());
+    }
 }
