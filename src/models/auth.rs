@@ -1,7 +1,6 @@
+use jsonwebtoken::{decode, DecodingKey, Validation, Algorithm}; 
 use serde::{Deserialize, Serialize};
-use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Validation, Algorithm, Header};
 use axum::http::StatusCode;
-
 #[derive(Debug, Serialize, Deserialize, Clone)] // Added Clone and Debug
 pub struct Claims {
     pub sub: String,
@@ -19,7 +18,8 @@ pub fn verify_token(token: &str, secret: &str) -> Result<Claims, StatusCode> {
 
 #[cfg(test)]
 mod tests {
-    use super::*; // <--- THIS IS THE KEY
+    use super::*;
+    use jsonwebtoken::{encode, Header, EncodingKey}; 
     use std::time::{SystemTime, UNIX_EPOCH};
 
     // Helper to get current unix timestamp
