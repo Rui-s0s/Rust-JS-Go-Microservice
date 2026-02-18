@@ -40,6 +40,7 @@ async fn main() {
     
     println!("🚀 Rust Gateway running on http://{}", addr);
     println!("Forwarding 'go-service' -> http://localhost:8081");
+    println!("Forwarding 'node-service' -> http://localhost:8082");
 
     axum::serve(listener, app).await.unwrap();
 }

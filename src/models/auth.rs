@@ -1,6 +1,7 @@
 use jsonwebtoken::{decode, DecodingKey, Validation, Algorithm}; 
 use serde::{Deserialize, Serialize};
 use axum::http::StatusCode;
+
 #[derive(Debug, Serialize, Deserialize, Clone)] // Added Clone and Debug
 pub struct Claims {
     pub sub: String,
