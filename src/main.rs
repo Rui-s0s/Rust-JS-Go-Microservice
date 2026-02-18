@@ -31,7 +31,7 @@ async fn main() {
     // This route matches: /:token/:service/*path
     // Example: /ey.../go-service/users/profile
     let app = Router::new()
-        .route("/{token}/{service}/{*path}", any(proxy_handler))
+        .route("/{service}/{*path}", any(proxy_handler))
         .with_state(shared_state);
 
     // 3. Start the Server
