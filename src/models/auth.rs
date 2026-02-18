@@ -8,6 +8,7 @@ pub struct Claims {
     pub exp: usize,
 }
 
+
 pub fn verify_token(token: &str, secret: &str) -> Result<Claims, StatusCode> {
     let key = DecodingKey::from_secret(secret.as_ref());
     let validation = Validation::new(Algorithm::HS256);
