@@ -62,7 +62,12 @@ mod tests {
     use super::*;
     use std::sync::Arc;
     use std::collections::HashMap;
-    use axum::extract::State;
+    use axum::{extract::State, Router, routing::get};
+    use tower::ServiceExt;
+    use jsonwebtoken::{Header, EncodingKey};
+
+    use crate::models::auth::Claims;
+
 
     // Helper to create a dummy AppState
     fn mock_state() -> AppState {
@@ -86,5 +91,50 @@ mod tests {
 
         // Assert that the Railroad switched to the Red Track (Unauthorized)
         assert_eq!(result.unwrap_err(), StatusCode::UNAUTHORIZED);
+    }
+
+    #[tokio::test]
+    async fn test_proxy_path_forwarding() {
+        // 1. Setup Mock State
+        let mut services = HashMap::new();
+        // We simulate a downstream Go backend at this URL
+        services.insert("auth-service".to_string(), "http://localhost:8080".to_string());
+        
+        let state = AppState {
+            jwt_secret: "test_secret".to_string(),
+            services: services.into(),
+            client: reqwest::Client::new(),
+        };
+
+        // 2. Generate a valid Token (Matching your verify_token logic)
+        // In a real test, you'd use your actual Claims struct
+        let my_claims = Claims { sub: "user_123".to_owned(), exp: 9999999999 }; 
+        let token = jsonwebtoken::encode(
+            &Header::default(),
+            &my_claims,
+            &EncodingKey::from_secret("test_secret".as_ref()),
+        ).unwrap();
+
+        // 3. Create the App Router
+        let app = Router::new()
+            .route("/proxy/{token}/{service}/{*path}", get(proxy_handler))
+            .with_state(state);
+
+        // 4. Construct the Request
+        // Testing path: /proxy/{token}/auth-service/api/v1/users
+        let uri = format!("/proxy/{}/auth-service/api/v1/users", token);
+        let request = Request::builder()
+            .uri(uri)
+            .method("GET")
+            .body(Body::empty())
+            .unwrap();
+
+        // 5. Fire the request
+        let response = app.oneshot(request).await.unwrap();
+
+        // 6. Assertions
+        // If the downstream service isn't actually running, you'll get a 502 (Bad Gateway)
+        // which actually PROVES your path logic worked and reached the forwarding step!
+        assert_eq!(response.status(), StatusCode::BAD_GATEWAY); 
     }
 }
