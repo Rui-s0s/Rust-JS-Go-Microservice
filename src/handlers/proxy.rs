@@ -3,15 +3,23 @@ use axum::{
     extract::{Path, State},
     http::{Method, HeaderMap, StatusCode},
     Form,
-    response::Response
+    response::{Response, Redirect,}
 };
 use serde::Deserialize;
 use crate::state::AppState;
 use crate::models::auth::verify_token;
 
+
+
+
+
 #[derive(Deserialize)]
 pub struct ProxyRequest {
     pub token: String,
+}
+
+pub async fn root_redirect() -> Redirect {
+    Redirect::to("/proxy/node-service/register")
 }
 
 
@@ -69,6 +77,10 @@ pub async fn proxy_handler(
 
     Ok(builder.body(Body::from(resp_body)).unwrap())
 }
+
+
+
+
 
 #[cfg(test)]
 mod tests {
