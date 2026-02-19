@@ -6,10 +6,14 @@ use std::sync::Arc;
 use std::collections::HashMap;
 use std::env;
 use dotenvy::dotenv;
-use axum::{routing::any,Router,};
+use axum::{routing::{any, get}, Router,};
 
 use crate::state::AppState;
-use crate::handlers::proxy::proxy_handler;
+use crate::handlers::proxy::{proxy_handler, root_redirect};
+
+
+
+
 
 #[tokio::main]
 async fn main() {
@@ -31,6 +35,8 @@ async fn main() {
     // This route matches: /:token/:service/*path
     // Example: /ey.../go-service/users/profile
     let app = Router::new()
+        .route("/login", post(login_handler))
+        .route("/register", post(register_handler))
         .route("/{service}/{*path}", any(proxy_handler))
         .with_state(shared_state);
 
