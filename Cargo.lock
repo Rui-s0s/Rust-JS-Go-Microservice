@@ -6,6 +6,7 @@ version = 4
 name = "Triservice"
 version = "0.1.0"
 dependencies = [
+ "async-trait",
  "axum",
  "axum-reverse-proxy",
  "dotenvy",
@@ -18,6 +19,17 @@ dependencies = [
  "tower-test",
  "tracing",
  "tracing-subscriber",
+]
+
+[[package]]
+name = "async-trait"
+version = "0.1.89"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9035ad2d096bed7955a320ee7e2230574d28fd3c3a0f186cbea1ff3c7eed5dbb"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]
