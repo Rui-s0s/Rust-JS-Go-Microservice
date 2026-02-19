@@ -1,7 +1,7 @@
 use axum::{
     body::Body,
     extract::{Path, State},
-    http::{Method, HeaderMap, Request, StatusCode},
+    http::{Method, HeaderMap, StatusCode},
     Form,
     response::Response
 };
@@ -16,11 +16,11 @@ pub struct ProxyRequest {
 
 
 pub async fn proxy_handler(
-    State(state): State<AppState>,
-    Path((service, path)): Path<(String, String)>,
-    Form(payload): Form<ProxyRequest>, 
-    method: Method,     
-    headers: HeaderMap, 
+    Path((service, path)): Path<(String, String)>, // 1. Path first
+    method: Method,                                // 2. Metadata
+    headers: HeaderMap,                            // 3. Metadata
+    State(state): State<AppState>,                 // 4. State (usually last or second to last)
+    Form(payload): Form<ProxyRequest>,             // 5. Body consumer (must be last)
 ) -> Result<Response<Body>, StatusCode> {
     
     // 1. JWT Validation
@@ -77,7 +77,8 @@ mod tests {
     use std::collections::HashMap;
     use axum::{extract::State, Router};
     use tower::ServiceExt;
-    use axum::routing::any;
+    use axum::{routing::any, http::Request,};
+    use crate::models::auth::create_token;
 
 
     // Helper to create a dummy AppState
@@ -103,15 +104,13 @@ mod tests {
             token: "invalid-token".to_string(),
         });
 
-        // 3. The Request (The 4th argument)
-        let req = Request::builder().body(Body::empty()).unwrap();
-
         // 4. Call with EXACTLY 4 arguments to match your definition
         let result = proxy_handler(
-            State(state), 
             path, 
+            Method::POST,
+            HeaderMap::new(),
+            State(state), 
             form, 
-            req
         ).await;
 
         assert_eq!(result.unwrap_err(), StatusCode::UNAUTHORIZED);
@@ -120,7 +119,8 @@ mod tests {
     #[tokio::test]
     async fn test_proxy_integration() {
         let state = mock_state();
-        let token = "valid-token-here"; // Ensure this is a real JWT if your mock validates it
+        let token = create_token("12345", "secret").unwrap();
+
 
         // 3. Create the App Router
         // Updated route: removed {token} from the path
@@ -130,7 +130,7 @@ mod tests {
 
         // 4. Construct the Request
         // The URI no longer contains the token
-        let uri = "/proxy/auth-service/api/v1/users";
+        let uri = "/proxy/backend/api/v1/users";
         
         // Create a URL-encoded form body
         let form_body = format!("token={}", token);
