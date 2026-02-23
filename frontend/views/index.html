@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Go HTMX Store</title>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <style>
+        body { font-family: sans-serif; padding: 20px; line-height: 1.6; }
+        .product-list { display: flex; gap: 20px; }
+        .card { border: 1px solid #ccc; padding: 15px; border-radius: 8px; }
+        #cart-badge { background: #ff4757; color: white; padding: 5px 10px; border-radius: 50%; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Cloud Shop</h1>
+        <p>Items in Cart: <span id="cart-badge">{{.CartCount}}</span></p>
+    </header>
+
+    <div class="product-list">
+        {{range .Products}}
+        <div class="card">
+            <h3>{{.Name}}</h3>
+            <p>${{.Price}}</p>
+            <button 
+                hx-post="/add-to-cart" 
+                hx-target="#cart-badge" 
+                hx-swap="innerHTML">
+                Add to Cart
+            </button>
+        </div>
+        {{end}}
+    </div>
+
+</body>
+</html>
