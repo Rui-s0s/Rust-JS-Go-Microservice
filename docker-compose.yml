@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  # --- THE DATABASE ---
+  mongo_db:
+    image: mongo:latest
+    container_name: store-db
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  # --- THE MESSAGE BROKER (KAFKA) ---
+  # zookeeper:
+  #   image: bitnami/zookeeper:latest
+  #   environment:
+  #     - ALLOW_ANONYMOUS_LOGIN=yes
+
+  # kafka:
+  #   image: bitnami/kafka:latest
+  #   ports:
+  #     - "9092:9092"
+  #   environment:
+  #     - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+  #     - ALLOW_PLAINTEXT_LISTENER=yes
+  #     - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092
+  #   depends_on:
+  #     - zookeeper
+
+  # --- YOUR APP (OPTIONAL BUT RECOMMENDED) ---
+  # Uncomment this once you have a Dockerfile for your app
+  # app:
+  #   build: .
+  #   ports:
+  #     - "3000:3000"
+  #   depends_on:
+  #     - mongo_db
+  #     - kafka
+
+volumes:
+  mongo_data:
