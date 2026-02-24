@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # --- THE DATABASE ---
   mongo_db:
@@ -27,15 +25,31 @@ services:
   #   depends_on:
   #     - zookeeper
 
-  # --- YOUR APP (OPTIONAL BUT RECOMMENDED) ---
-  # Uncomment this once you have a Dockerfile for your app
-  # app:
-  #   build: .
+  # --- MICROSERVICES ---
+  
+  # Node.js Service (The Frontend API)
+  # node-api:
+  #   build: ./node-app
   #   ports:
   #     - "3000:3000"
+  #   environment:
+  #     - MONGO_URI=mongodb://mongo_db:27017/shop
+  #     - KAFKA_BROKER=kafka:9092
   #   depends_on:
   #     - mongo_db
   #     - kafka
 
+  # # Go Service (The Inventory/Shipping Processor)
+  # go-worker:
+  #   build: ./go-app
+  #   environment:
+  #     - KAFKA_BROKER=kafka:9092
+  #   depends_on:
+  #     - kafka
+
 volumes:
   mongo_data:
+
+# To use mongo like psql:
+# docker exec -it store-db mongosh  
+# docker logs -f store-db
