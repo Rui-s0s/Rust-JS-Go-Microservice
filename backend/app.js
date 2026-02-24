@@ -1,13 +1,7 @@
-import express from 'express'
-import postsRoutes from './routes/postsRoutes.js'
+import express from 'express';
+import productRoutes from './routes/productRoutes.js';
 
-const app = express()
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
-app.set('view engine', 'pug')
-app.use(express.static('public'));
+const app = express();
+app.use("/products", productRoutes);
 
-// Use the routes
-app.use('/', postsRoutes)
-
-app.listen(3000, () => console.log('Server running on http://localhost:3000'))
+app.listen(3000, () => console.log('Server at http://localhost:3000'));
