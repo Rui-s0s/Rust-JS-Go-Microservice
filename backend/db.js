@@ -9,11 +9,8 @@ const connectDB = async () => {
     const dbName = conn.connection.name;
     const host = conn.connection.host;
     const readyState = conn.connection.readyState;
-
-    // console.log(`✅ MongoDB Connected!`);
-    // console.log(`📍 Host: ${host}`);        // Should be 'mongo_db' if in Docker
-    // console.log(`📂 Database: ${dbName}`); // Should be 'shopDB'
-    // console.log(`🚦 Status: ${readyState === 1 ? 'Ready' : 'Not Ready'}`);
+    const port = conn.connection.port;
+    console.log(`✅ MongoDB Connected! Host: ${host}, Port: ${port}, Database: ${dbName}, Status: ${readyState === 1 ? 'Ready' : 'Not Ready'}`);
 
   } catch (err) {
     console.error(`❌ Connection Error: ${err.message}`);
@@ -22,5 +19,3 @@ const connectDB = async () => {
 };
 
 export default connectDB;
-
-connectDB()
