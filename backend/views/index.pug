@@ -1,0 +1,48 @@
+doctype html
+html
+  head
+    title Product Inventory
+    style.
+      body { font-family: sans-serif; padding: 20px; line-height: 1.6; }
+      .product-card { border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; border-radius: 4px; }
+      .form-group { margin-bottom: 10px; }
+      label { display: block; font-weight: bold; }
+      .delete-btn { color: red; cursor: pointer; background: none; border: none; padding: 0; text-decoration: underline; }
+
+  body
+    h1 Product Management (No-JS CRUD)
+
+    section
+      h2 Add New Product
+      form(action="/products" method="POST")
+        .form-group
+          label JWT Token:
+          input(type="text" name="token" required placeholder="Paste your token here")
+        .form-group
+          label Name:
+          input(type="text" name="name" required)
+        .form-group
+          label Price:
+          input(type="number" name="price" step="0.01")
+        .form-group
+          label Stock:
+          input(type="number" name="stock")
+        button(type="submit") Create Product
+
+    hr
+
+    section
+      h2 Product List
+      each product in products
+        .product-card
+          h3= product.name
+          p Price: $#{product.price} | Stock: #{product.stock}
+          
+          div(style="display: flex; gap: 10px;")
+            //- Edit link takes user to a separate edit page
+            a(href=`/products/edit/${product._id}`) Edit
+            
+            //- Delete requires a form because it's a "destructive" POST action
+            form(action=`/products/delete/${product._id}` method="POST" id=`delete-form-${product._id}`)
+                input(type="hidden" name="token" id=`token-${product._id}`)
+                button.delete-btn(type="button" onclick=`const t = prompt('Enter JWT to delete:'); if(t) { document.getElementById('token-${product._id}').value = t; this.form.submit(); }`) Delete

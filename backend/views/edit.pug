@@ -1,0 +1,22 @@
+doctype html
+html
+  head
+    title Edit #{product.name}
+  body
+    h1 Edit Product
+    form(action=`/products/update/${product._id}` method="POST")
+      .form-group
+        label Admin JWT Token:
+        input(type="text" name="token" required)
+      .form-group
+        label Name:
+        input(type="text" name="name" value=product.name required)
+      .form-group
+        label Price:
+        input(type="number" name="price" value=product.price step="0.01")
+      .form-group
+        label Stock:
+        input(type="number" name="stock" value=product.stock)
+      
+      button(type="submit") Save Changes
+      a(href="/products") Cancel
