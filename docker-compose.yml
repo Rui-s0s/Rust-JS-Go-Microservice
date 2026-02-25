@@ -28,16 +28,16 @@ services:
   # --- MICROSERVICES ---
   
   # Node.js Service (The Frontend API)
-  # node-api:
-  #   build: ./node-app
-  #   ports:
-  #     - "3000:3000"
-  #   environment:
-  #     - MONGO_URI=mongodb://mongo_db:27017/shop
-  #     - KAFKA_BROKER=kafka:9092
-  #   depends_on:
-  #     - mongo_db
-  #     - kafka
+  node-api:
+    build: ./backend
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGO_URI=mongodb://mongo_db:27017/shop
+      # - KAFKA_BROKER=kafka:9092
+    depends_on:
+      - mongo_db
+      # - kafka
 
   # # Go Service (The Inventory/Shipping Processor)
   # go-worker:
