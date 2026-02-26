@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ .Name }}</title>
+</head>
+<body>
+
+<h1>{{ .Name }}</h1>
+<p>{{ .Description }}</p>
+<p><strong>Price:</strong> ${{ .Price }}</p>
+<p><strong>Current Stock:</strong> {{ .Stock }}</p>
+
+<hr>
+
+{{ if gt .Stock 0 }}
+    <h2>Order This Product</h2>
+    <form method="POST" action="/product/order/{{ .ID.Hex }}">
+        <label>Email:</label><br>
+        <input type="email" name="email" required><br><br>
+
+        <label>Location:</label><br>
+        <input type="text" name="location" required><br><br>
+
+        <label>Credit Card Number:</label><br>
+        <input type="text" name="payment" placeholder="1234 5678 9012 3456" required pattern="\d{13,16}" maxlength="16"><br><br>
+
+        <button type="submit">Place Order</button>
+    </form>
+{{ else }}
+    <h3 style="color: red;">OUT OF STOCK</h3>
+{{ end }}
+
+</body>
+</html>
