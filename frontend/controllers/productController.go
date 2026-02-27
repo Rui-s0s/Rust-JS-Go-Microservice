@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"back/models"
-	"fmt"
 	"html/template"
 	"net/http"
 	"time"
@@ -13,8 +12,8 @@ import (
 )
 
 type ProductController struct {
-	ProductCollection *mongo.Collection // Replaces "Collection"
-	OrderCollection   *mongo.Collection // New field
+	ProductCollection *mongo.Collection
+	OrderCollection   *mongo.Collection
 }
 
 func (pc *ProductController) ListProducts(w http.ResponseWriter, r *http.Request) {
@@ -26,7 +25,7 @@ func (pc *ProductController) ListProducts(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	tmpl := template.Must(template.ParseFiles("views/templates/products.html"))
+	tmpl := template.Must(template.ParseFiles("views/templates/index.html"))
 	tmpl.Execute(w, products)
 }
 
@@ -91,5 +90,10 @@ func (pc *ProductController) PlaceOrder(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	fmt.Fprint(w, "Order successful!")
+	http.Redirect(w, r, "/order-success", http.StatusSeeOther)
+}
+
+func (pc *ProductController) OrderSuccess(w http.ResponseWriter, r *http.Request) {
+	tmpl := template.Must(template.ParseFiles("views/templates/success.html"))
+	tmpl.Execute(w, nil)
 }

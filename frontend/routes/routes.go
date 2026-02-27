@@ -9,4 +9,5 @@ func RegisterRoutes(pc *controllers.ProductController) {
 	http.HandleFunc("/products", pc.ListProducts)
 	http.HandleFunc("/product/", pc.GetProduct)
 	http.HandleFunc("/product/order/", pc.PlaceOrder)
+	http.HandleFunc("/order-success", pc.OrderSuccess)
 }
