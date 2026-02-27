@@ -9,11 +9,10 @@ import (
 )
 
 type Product struct {
-	ID          primitive.ObjectID `bson:"_id,omitempty"`
-	Name        string             `bson:"name"`
-	Description string             `bson:"description"`
-	Price       float64            `bson:"price"`
-	Stock       int                `bson:"stock"` // You were missing this field!
+	ID    primitive.ObjectID `bson:"_id,omitempty"`
+	Name  string             `bson:"name"`
+	Price float64            `bson:"price"`
+	Stock int                `bson:"stock"`
 }
 
 func GetAllProducts(ctx context.Context, col *mongo.Collection) ([]Product, error) {
