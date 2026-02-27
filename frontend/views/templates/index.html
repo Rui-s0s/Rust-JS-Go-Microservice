@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Shop - Product Catalog</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #3498db;
+            --bg: #f4f7f6;
+            --text: #333;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 40px 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        h1 { 
+            text-align: center; 
+            color: var(--primary);
+            margin-bottom: 40px;
+            font-size: 2.5rem;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 0;
+            list-style: none;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+        }
+
+        .product-card h3 {
+            margin: 0 0 10px 0;
+            color: var(--primary);
+        }
+
+        .price {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #27ae60;
+            margin-bottom: 15px;
+        }
+
+        .view-link {
+            display: inline-block;
+            text-align: center;
+            background-color: var(--accent);
+            color: white;
+            text-decoration: none;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .view-link:hover {
+            background-color: #2980b9;
+        }
+
+        .footer-nav {
+            margin-top: 60px;
+            text-align: center;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+        }
+
+        .admin-btn {
+            color: #7f8c8d;
+            text-decoration: none;
+            font-size: 0.9rem;
+            border: 1px solid #bdc3c7;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .admin-btn:hover {
+            background: #eee;
+            color: var(--primary);
+        }
+
+        .empty-state {
+            text-align: center;
+            grid-column: 1 / -1;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Our Products</h1>
+
+    <div class="product-grid">
+        {{ range . }}
+            <div class="product-card">
+                <div>
+                    <h3>{{ .Name }}</h3>
+                    <p class="price">${{ printf "%.2f" .Price }}</p>
+                </div>
+                <a href="/product/{{ .ID.Hex }}" class="view-link">View Details</a>
+            </div>
+        {{ else }}
+            <div class="empty-state">
+                <p>No products found in the catalog.</p>
+            </div>
+        {{ end }}
+    </div>
+
+    <footer class="footer-nav">
+        <a href="http://localhost:3000/" class="admin-btn">Admin Login</a>
+    </footer>
+</div>
+
+</body>
+</html>
