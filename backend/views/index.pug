@@ -3,46 +3,73 @@ html
   head
     title Product Inventory
     style.
-      body { font-family: sans-serif; padding: 20px; line-height: 1.6; }
-      .product-card { border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; border-radius: 4px; }
+      body { font-family: sans-serif; padding: 20px; line-height: 1.6; max-width: 1000px; margin: auto; }
+      .product-card, .order-card { border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; border-radius: 4px; }
+      .order-card { border-left: 5px solid #2ecc71; background-color: #f9f9f9; }
       .form-group { margin-bottom: 10px; }
       label { display: block; font-weight: bold; }
       .delete-btn { color: red; cursor: pointer; background: none; border: none; padding: 0; text-decoration: underline; }
+      .status-tag { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; background: #e0e0e0; text-transform: uppercase; }
+      .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+      @media (max-width: 768px) { .grid-container { grid-template-columns: 1fr; } }
 
   body
-    h1 Product Management (No-JS CRUD)
+    h1 Shop Administration
 
     section
       h2 Add New Product
-      form(action="/products" method="POST")
-        .form-group
-          label JWT Token:
-          input(type="text" name="token" required placeholder="Paste your token here")
+      //- Note: We pass the token in the action URL AND a hidden input for maximum compatibility
+      form(action=`/products?token=${token}` method="POST")
+        //- HIDDEN TOKEN: This is automatically populated from the GET /products route
+        input(type="hidden" name="token" value=token)
+        
         .form-group
           label Name:
           input(type="text" name="name" required)
+        
         .form-group
           label Price:
-          input(type="number" name="price" step="0.01")
+          //- HTML5 Validation: min="0" prevents negative numbers in the browser
+          input(type="number" name="price" step="0.01" min="0" required)
+        
         .form-group
           label Stock:
-          input(type="number" name="stock")
+          input(type="number" name="stock" min="0" required)
+        
         button(type="submit") Create Product
 
     hr
 
-    section
-      h2 Product List
-      each product in products
-        .product-card
-          h3= product.name
-          p Price: $#{product.price} | Stock: #{product.stock}
-          
-          div(style="display: flex; gap: 10px;")
-            //- Edit link takes user to a separate edit page
-            a(href=`/products/edit/${product._id}`) Edit
-            
-            //- Delete requires a form because it's a "destructive" POST action
-            form(action=`/products/delete/${product._id}` method="POST" id=`delete-form-${product._id}`)
-                input(type="hidden" name="token" id=`token-${product._id}`)
-                button.delete-btn(type="button" onclick=`const t = prompt('Enter JWT to delete:'); if(t) { document.getElementById('token-${product._id}').value = t; this.form.submit(); }`) Delete
+    .grid-container
+      //- LEFT COLUMN: PRODUCTS
+      section
+        h2 Product List
+        if products && products.length > 0
+          each product in products
+            .product-card
+              h3= product.name
+              p Price: $#{product.price} | Stock: #{product.stock}
+              
+              div(style="display: flex; gap: 10px;")
+                a(href=`/products/edit/${product._id}?token=${token}`) Edit
+                form(action=`/products/delete/${product._id}` method="POST")
+                  //- Automatically inject the token variable into the form
+                  input(type="hidden" name="token" value=token)
+                  
+                  //- Simple browser confirmation before submitting
+                  button.delete-btn(type="submit" onclick="return confirm('Are you sure you want to delete this product?')") Delete
+        else
+          p No products found.
+
+      //- RIGHT COLUMN: ORDERS
+      section
+        h2 Order History
+        if orders && orders.length > 0
+          each order in orders
+            .order-card
+              strong Order ID: #{order._id}
+              p Product: #{order.productName}
+              p Customer: #{order.email}
+              small Date: #{order.displayDate}
+        else
+          p No orders recorded yet.

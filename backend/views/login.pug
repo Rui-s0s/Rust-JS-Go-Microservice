@@ -19,16 +19,26 @@ html
   
       if !token
         form(action="/login" method="POST")
-          label Username:
-          input(type="text" name="username" required)
-          label Password:
-          input(type="password" name="password" required)
+          .form-group
+            label Username:
+            input(type="text" name="username" required)
+          .form-group
+            label Password:
+            input(type="password" name="password" required)
           button(type="submit") Generate Token
-      
+
       else
-        h2 Success!
-        p Copy your JWT token below:
-        .token-box #{token}
+        h2 Access Granted
+        p Your session is ready. Use the button below to enter the management area:
         
-        div(style="margin-top: 20px;")
-          a(href="/products") ← Go to Product Management
+        //- The "Big Green Button" approach
+        div(style="margin: 20px 0;")
+          a(
+            href=`/products?token=${token}` 
+            style="display: inline-block; padding: 15px 25px; background: #2ecc71; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 1.1em;"
+          ) ENTER DASHBOARD →
+
+        hr
+        
+        p(style="font-size: 0.8em; color: #666;") For API tools, your manual JWT is:
+          .token-box(style="background: #eee; padding: 10px; word-break: break-all; border: 1px dashed #ccc; font-family: monospace;") #{token}
