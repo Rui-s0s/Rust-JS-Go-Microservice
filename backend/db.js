@@ -5,7 +5,6 @@ const connectDB = async () => {
     const uri = process.env.MONGO_URI || 'mongodb://localhost:27017/shopDB';
     const conn = await mongoose.connect(uri);
 
-    // --- The "Basic Shit" Tests ---
     const dbName = conn.connection.name;
     const host = conn.connection.host;
     const readyState = conn.connection.readyState;
