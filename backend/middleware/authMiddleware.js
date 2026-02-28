@@ -11,7 +11,7 @@ export const verifyToken = (req, res, next) => {
     return res.status(401).send(`
       <h1>Unauthorized</h1>
       <p>Access denied. No token provided.</p>
-      <a href="/login">Return to Login</a>
+      <a href="/">Return to Login</a>
     `);
   }
 

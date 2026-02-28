@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"log"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -9,19 +10,29 @@ import (
 )
 
 func InitMongo(uri string) (*mongo.Client, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
+	// Retry loop: try 5 times with a delay
+	var client *mongo.Client
+	var err error
 
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
-	if err != nil {
-		return nil, err
+	for i := 0; i < 5; i++ {
+		// Use a shorter context for individual attempts
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		client, err = mongo.Connect(ctx, options.Client().ApplyURI(uri))
+		cancel() // Clean up context immediately
+
+		if err == nil {
+			// Check if ping works
+			pingCtx, pingCancel := context.WithTimeout(context.Background(), 2*time.Second)
+			err = client.Ping(pingCtx, nil)
+			pingCancel()
+
+			if err == nil {
+				return client, nil // Connected successfully!
+			}
+		}
+
+		log.Printf("Waiting for MongoDB... (attempt %d/5)", i+1)
+		time.Sleep(3 * time.Second) // Wait before retrying
 	}
-
-	// Ping the database to ensure connection works
-	err = client.Ping(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return client, nil
+	return nil, err
 }
