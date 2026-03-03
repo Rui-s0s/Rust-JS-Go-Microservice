@@ -14,24 +14,6 @@ services:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
-
-  # --- THE MESSAGE BROKER (KAFKA) ---
-  # zookeeper:
-  #   image: bitnami/zookeeper:latest
-  #   environment:
-  #     - ALLOW_ANONYMOUS_LOGIN=yes
-
-  # kafka:
-  #   image: bitnami/kafka:latest
-  #   ports:
-  #     - "9092:9092"
-  #   environment:
-  #     - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
-  #     - ALLOW_PLAINTEXT_LISTENER=yes
-  #     - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092
-  #   depends_on:
-  #     - zookeeper
-
   # --- MICROSERVICES ---
   
   # Node.js Service (The Backend API)
@@ -41,7 +23,9 @@ services:
       - "3000:3000"
     environment:
      - MONGO_URI=mongodb://mongo_db:27017/shopDB
-  #     # - KAFKA_BROKER=kafka:9092
+     - JWT_SECRET=${JWT_SECRET}
+     - ADMIN_USERNAME=${ADMIN_USERNAME}
+     - ADMIN_PASSWORD=${ADMIN_PASSWORD}
     depends_on:
      - mongo_db
       # - kafka
@@ -56,9 +40,7 @@ services:
         condition: service_healthy
     environment:
     - MONGO_URI=mongodb://mongo_db:27017/shopDB
-  #     - KAFKA_BROKER=kafka:9092
-  #   depends_on:
-  #     - kafka
+
 
 volumes:
   mongo_data:
