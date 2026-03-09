@@ -16,6 +16,8 @@ type ProductController struct {
 	OrderCollection   *mongo.Collection
 }
 
+// r request w response (r what you "r"ead, w what you "w"rite as a response)
+
 func (pc *ProductController) ListProducts(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 

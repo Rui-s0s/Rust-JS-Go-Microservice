@@ -8,6 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+// Internal labels			 // External labels (mongo)
 type Product struct {
 	ID    primitive.ObjectID `bson:"_id,omitempty"`
 	Name  string             `bson:"name"`
@@ -15,6 +16,7 @@ type Product struct {
 	Stock int                `bson:"stock"`
 }
 
+// Context works like a signal to not waste resources, this is get all like db.products.find({})
 func GetAllProducts(ctx context.Context, col *mongo.Collection) ([]Product, error) {
 	cursor, err := col.Find(ctx, bson.M{})
 	if err != nil {

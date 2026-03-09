@@ -6,6 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+// Internal labels			 // External labels (mongo)
 type Order struct {
 	ID        primitive.ObjectID `bson:"_id,omitempty" json:"id"`
 	ProductID primitive.ObjectID `bson:"product_id" json:"product_id"`
