@@ -3,6 +3,7 @@ package main
 import (
 	"back/controllers"
 	"back/database"
+	"back/middlewares"
 	"back/routes"
 	"log"
 	"net/http"
@@ -18,7 +19,7 @@ func main() {
 	productColl := client.Database("shopDB").Collection("products")
 	orderColl := client.Database("shopDB").Collection("orders")
 
-	// Inject BOTH into the controller
+	// Injects both into the controller
 	pc := &controllers.ProductController{
 		ProductCollection: productColl,
 		OrderCollection:   orderColl,
@@ -26,6 +27,8 @@ func main() {
 
 	routes.RegisterRoutes(pc)
 
+	loggedRouter := middlewares.RequestLogger(http.DefaultServeMux)
+
 	log.Println("Server running on http://0.0.0.0:8080")
-	http.ListenAndServe(":8080", nil)
+	log.Fatal(http.ListenAndServe(":8080", loggedRouter))
 }
