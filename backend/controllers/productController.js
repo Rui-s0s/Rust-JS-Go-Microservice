@@ -91,11 +91,38 @@ export async function deleteProduct (req, res) {
 
   try {
     await Product.findByIdAndDelete(req.params.id);
-    
+
     // Redirect back to the list while keeping the user authenticated
     res.redirect(`/products?token=${token}`);
   } catch (error) {
     console.error("Delete Error:", error);
     res.status(500).send("Failed to delete product.");
+  }
+}
+
+// For '/orders/update/:id' POST update order status
+export async function updateOrderStatus (req, res) {
+  const { status, token } = req.body;
+  const { id } = req.params;
+
+  try {
+    await Order.findByIdAndUpdate(id, { status });
+    res.redirect(`/products?token=${token}`);
+  } catch (err) {
+    console.error("Order Update Error:", err);
+    res.status(500).send("Failed to update order status.");
+  }
+}
+
+// For '/orders/delete/:id' POST delete order
+export async function deleteOrder (req, res) {
+  const token = req.body.token;
+
+  try {
+    await Order.findByIdAndDelete(req.params.id);
+    res.redirect(`/products?token=${token}`);
+  } catch (error) {
+    console.error("Order Delete Error:", error);
+    res.status(500).send("Failed to delete order.");
   }
 }
