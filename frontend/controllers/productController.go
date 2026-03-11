@@ -18,7 +18,7 @@ type ProductController struct {
 
 // r request w response (r what you "r"ead, w what you "w"rite as a response)
 
-// For "/products"
+// For "/products" GET all products
 func (pc *ProductController) ListProducts(w http.ResponseWriter, r *http.Request) {
 	// ctx checks the status of the conection
 	ctx := r.Context()
@@ -34,7 +34,7 @@ func (pc *ProductController) ListProducts(w http.ResponseWriter, r *http.Request
 	tmpl.Execute(w, products)
 }
 
-// For "/product/"
+// For "/product/" GET a product
 func (pc *ProductController) GetProduct(w http.ResponseWriter, r *http.Request) {
 	// Getting the id from url
 	idParam := r.URL.Path[len("/product/"):]
@@ -62,7 +62,7 @@ func (pc *ProductController) GetProduct(w http.ResponseWriter, r *http.Request) 
 	tmpl.Execute(w, product)
 }
 
-// For "/product/order/"
+// For "/product/order/" POST to create an order for a product
 func (pc *ProductController) PlaceOrder(w http.ResponseWriter, r *http.Request) {
 	// Getting the id and converting to ObjectID for mongo to use
 	idParam := r.URL.Path[len("/product/order/"):]
@@ -78,6 +78,13 @@ func (pc *ProductController) PlaceOrder(w http.ResponseWriter, r *http.Request) 
 	if err != nil || result.ModifiedCount == 0 {
 		http.Error(w, "Item is out of stock!", http.StatusConflict)
 		return
+	}
+
+	// Check if stock reached 0 and update state
+	var updatedProduct models.Product
+	err = pc.ProductCollection.FindOne(r.Context(), bson.M{"_id": productID}).Decode(&updatedProduct)
+	if err == nil && updatedProduct.Stock == 0 {
+		pc.ProductCollection.UpdateOne(r.Context(), bson.M{"_id": productID}, bson.M{"$set": bson.M{"state": "Out of Stock"}})
 	}
 
 	// Create a new order
@@ -99,7 +106,7 @@ func (pc *ProductController) PlaceOrder(w http.ResponseWriter, r *http.Request) 
 	http.Redirect(w, r, "/order-success", http.StatusSeeOther)
 }
 
-// For "/order-success"
+// For "/order-success" GET order
 func (pc *ProductController) OrderSuccess(w http.ResponseWriter, r *http.Request) {
 	tmpl := template.Must(template.ParseFiles("views/templates/success.html"))
 	tmpl.Execute(w, nil)

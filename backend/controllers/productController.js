@@ -22,7 +22,10 @@ export async function newProduct (req, res) {
 
   try {
     // 1. Manual Validation for negatives
-    if (parseFloat(price) < 0 || parseInt(stock) < 0) {
+    const numPrice = parseFloat(price);
+    const numStock = parseInt(stock);
+
+    if (numPrice < 0 || numStock < 0) {
       return res.status(400).send(`
         <h1>Validation Error</h1>
         <p>Price and Stock cannot be negative.</p>
@@ -30,12 +33,15 @@ export async function newProduct (req, res) {
       `);
     }
 
+    // Auto-set state based on stock
+    const state = numStock === 0 ? 'Out of Stock' : 'On Stock';
+
     // 2. Create the product
-    // We explicitly define the object to avoid saving the 'token' field into the DB
     await Product.create({
       name,
-      price: parseFloat(price),
-      stock: parseInt(stock),
+      price: numPrice,
+      stock: numStock,
+      state: state
     });
 
     // 3. Redirect back with the session token
@@ -67,8 +73,30 @@ export async function editProduct (req, res) {
   const { token } = req.body; // Token coming from hidden input
       
   try {
-    const { name, price, stock, state } = req.body;
-    await Product.findByIdAndUpdate(req.params.id, { name, price, stock, state });
+    let { name, price, stock, state } = req.body;
+    let numPrice = parseFloat(price);
+    let numStock = parseInt(stock);
+
+  
+    // If user manually selects "Out of Stock", force stock to 0
+    if (state === 'Out of Stock') {
+      numStock = 0;
+    } 
+    // If user sets stock to 0, force state to "Out of Stock"
+    else if (numStock === 0) {
+      state = 'Out of Stock';
+    }
+    // If stock is > 0 but state was "Out of Stock", move it back to "On Stock"
+    else if (numStock > 0 && state === 'Out of Stock') {
+      state = 'On Stock';
+    }
+
+    await Product.findByIdAndUpdate(req.params.id, { 
+      name, 
+      price: numPrice, 
+      stock: numStock, 
+      state: state 
+    });
     
     res.redirect(`/products?token=${token}`);
   } catch (err) {
