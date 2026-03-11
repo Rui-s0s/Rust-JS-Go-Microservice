@@ -7,10 +7,11 @@ import (
 	"back/routes"
 	"log"
 	"net/http"
+	"os"
 )
 
 func main() {
-	client, err := database.InitMongo("mongodb://mongo_db:27017")
+	client, err := database.InitMongo(os.Getenv("MONGO_URI"))
 	if err != nil {
 		log.Fatal(err)
 	}

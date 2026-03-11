@@ -2,9 +2,9 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 dotenv.config();
 
-const SECRET_KEY = process.env.JWT_SECRET
-const ADMIN_USER = process.env.ADMIN_USERNAME; 
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+const SECRET_KEY = process.env.JWT_SECRET || 'your_secret_key';
+const ADMIN_USER = process.env.ADMIN_USERNAME || 'admin'; 
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'password';
 
 export async function login (req,res) {
     const { username, password } = req.body;

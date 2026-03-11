@@ -10,6 +10,9 @@ import (
 )
 
 func InitMongo(uri string) (*mongo.Client, error) {
+	if uri == "" {
+		uri = "mongodb://localhost:27017"
+	}
 	// Retry loop: try 5 times with a delay
 	var client *mongo.Client
 	var err error
