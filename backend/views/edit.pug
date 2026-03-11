@@ -29,6 +29,13 @@ html
         label Stock:
         input(type="number" name="stock" value=product.stock)
       
+      .form-group
+        label Status:
+        select(name="state" required)
+          option(value="On Stock" selected=product.state==='On Stock') On Stock
+          option(value="Out of Stock" selected=product.state==='Out of Stock') Out of Stock
+          option(value="On Sale" selected=product.state==='On Sale') On Sale
+      
       button(type="submit" style="padding: 10px 20px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer;") Save Changes
     
     br

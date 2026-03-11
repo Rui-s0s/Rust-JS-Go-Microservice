@@ -48,7 +48,7 @@ html
           each product in products
             .product-card
               h3= product.name
-              p Price: $#{product.price} | Stock: #{product.stock}
+              p Price: $#{product.price} | Stock: #{product.stock} | Status: #{product.state} 
               
               div(style="display: flex; gap: 10px;")
                 a(href=`/products/edit/${product._id}?token=${token}`) Edit

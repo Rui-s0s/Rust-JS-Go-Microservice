@@ -35,7 +35,7 @@ export async function newProduct (req, res) {
     await Product.create({
       name,
       price: parseFloat(price),
-      stock: parseInt(stock)
+      stock: parseInt(stock),
     });
 
     // 3. Redirect back with the session token
@@ -67,8 +67,8 @@ export async function editProduct (req, res) {
   const { token } = req.body; // Token coming from hidden input
       
   try {
-    const { name, price, stock } = req.body;
-    await Product.findByIdAndUpdate(req.params.id, { name, price, stock });
+    const { name, price, stock, state } = req.body;
+    await Product.findByIdAndUpdate(req.params.id, { name, price, stock, state });
     
     res.redirect(`/products?token=${token}`);
   } catch (err) {
