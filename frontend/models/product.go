@@ -14,6 +14,7 @@ type Product struct {
 	Name  string             `bson:"name"`
 	Price float64            `bson:"price"`
 	Stock int                `bson:"stock"`
+	State string             `bson:"state"`
 }
 
 // Context works like a signal to not waste resources, this is get all like db.products.find({})
